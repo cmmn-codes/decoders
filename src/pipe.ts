@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types,prefer-rest-params */
+/* eslint-disable @typescript-eslint/ban-types,prefer-rest-params,@typescript-eslint/no-non-null-assertion */
 /**
  * A function for composing functions together, passes the return value from
  * one function as the input of the next. Moving from left to right.

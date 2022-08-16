@@ -59,15 +59,15 @@ type FlattenType<T> = T extends object
  *  type Foo = Infer<typeof fooDecoder>;
  * ```
  */
-export type Infer<T extends Decoder<any>> = FlattenType<_Infer<T>>;
+export type Infer<T extends Decoder<unknown>> = FlattenType<_Infer<T>>;
 
-type _Infer<T extends Decoder<any>> = T extends Decoder<infer A>
-  ? A extends Record<PropertyKey, Decoder<any>>
+type _Infer<T extends Decoder<unknown>> = T extends Decoder<infer A>
+  ? A extends Record<PropertyKey, Decoder<unknown>>
     ? InferDecoderObjectType<A>
     : A
   : never;
 
-type InferDecoderObjectType<T extends Record<PropertyKey, Decoder<any>>> =
+type InferDecoderObjectType<T extends Record<PropertyKey, Decoder<unknown>>> =
   Optionalize<{
     [K in keyof T]: _Infer<T[K]>;
   }>;
@@ -121,8 +121,8 @@ export function union<A, B, I = unknown>(
 ): Decoder<A | B, I>;
 export function union<A, I = unknown>(decoders: [Decoder<A, I>]): Decoder<A, I>;
 export function union<I = unknown>(
-  decoders: readonly Decoder<any>[]
-): Decoder<any, I> {
+  decoders: readonly Decoder<unknown>[]
+): Decoder<unknown, I> {
   return (input: I) => {
     // TODO: write this elegantly and cover edge case;
     for (const decoder of decoders) {
@@ -141,7 +141,7 @@ function isPrimitive(v: unknown): v is number | string | undefined {
   return typeof v === 'number' || typeof v === 'string' || v === undefined;
 }
 
-function filterIntersection(input: unknown): (values: unknown[]) => any {
+function filterIntersection(input: unknown): (values: unknown[]) => unknown {
   return (values) => {
     if (isPrimitive(input)) return input;
     if (Array.isArray(input)) {
@@ -151,6 +151,7 @@ function filterIntersection(input: unknown): (values: unknown[]) => any {
     if (!isObject(input)) {
       return input;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const r: any = {};
     for (const v of values) {
       if (!isObject(v)) {
@@ -189,8 +190,8 @@ export function intersection<A, I = unknown>(
   decoders: [Decoder<A, I>]
 ): Decoder<A, I>;
 export function intersection<I = unknown>(
-  decoders: Decoder<any>[]
-): Decoder<any, I> {
+  decoders: Decoder<unknown>[]
+): Decoder<unknown, I> {
   return (input: I) => {
     return pipe(
       decoders,
@@ -224,7 +225,7 @@ export function object<
     if (typeof v !== 'object') return failure('Not an object');
     if (Array.isArray(v)) return failure('Not an object');
     if (v == null) return failure('Not an object');
-    let result: DecoderResult<Record<string, any>> = ok({});
+    let result: DecoderResult<Record<string, unknown>> = ok({});
     for (const [key, decoder] of Object.entries(o)) {
       if (isFailure(result)) {
         break;
