@@ -1,4 +1,6 @@
 # Common Decoders
+[![test-build](https://github.com/cmmn-codes/decoders/actions/workflows/tests.yml/badge.svg)](https://github.com/cmmn-codes/decoders/actions/workflows/tests.yml)
+[![Coverage Status](https://coveralls.io/repos/github/cmmn-codes/decoders/badge.svg?branch=main)](https://coveralls.io/github/cmmn-codes/decoders?branch=main)
 
 A minimal typescript schema library for runtime validations.
 
@@ -6,8 +8,6 @@ Write your type definitions once and get both types and runtime validation check
 Decoders are light-weight, composable, and follow functional programming patterns.
 
 ## Installation
-
-
 
 ```bash
 # NPM
@@ -50,6 +50,12 @@ const AnimalDecoder = D.union([
 type Animal = D.Infer<typeof AnimalDecoder>;
 ```
 
+## API
+
+Full documentation is available [here](https://cmmn-codes.github.io/decoders/).
+
+Or can be built locally by running: `yarn docs`;
+
 ### ESM or CJS Imports
 
 **TL;DR; prefer ESM**
@@ -68,12 +74,6 @@ Or with `moduleResolution` set to `node`:
 import * as D from 'common-decoders';
 import { isOk, isFailure, map, pipe } from 'common-decoders/dist/cjs/utils';
 ```
-
-## API
-
-Full documentation is available [here]().
-
-Or can be built locally by running: `yarn docs`;
 
 ## Prior art:
 
