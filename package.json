@@ -14,6 +14,12 @@
     "type": "git",
     "url": "https://github.com/cmmn-codes/decoders"
   },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "homepage": "https://github.com/cmmn-codes/decoders",
   "license": "MIT",
   "scripts": {
