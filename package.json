@@ -1,7 +1,7 @@
 {
   "name": "common-decoders",
   "version": "0.0.1",
-  "description": "",
+  "description": "A simple, functional, typescript schema library for generating types and runtime checks.",
   "author": "Benjamin Forster",
   "type": "module",
   "engines": {
