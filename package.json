@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "author": "Benjamin Forster",
-  "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=16.0"
@@ -11,6 +10,12 @@
   "main": "dist/cjs/decoders.js",
   "module": "dist/esm/decoders.js",
   "types": "dist/esm/decoders.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmmn-codes/decoders"
+  },
+  "homepage": "https://github.com/cmmn-codes/decoders",
+  "license": "MIT",
   "scripts": {
     "build": "rimraf ./dist && tsc -p tsconfig.build.cjs.json && tsc -p tsconfig.build.esm.json && node scripts/post-build.js",
     "dev": "tsc -p tsconfig.build.esm.json -w",
