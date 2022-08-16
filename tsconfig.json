@@ -24,5 +24,6 @@
       "./src/utils.ts"
     ],
     "theme": "default",
+    "gitRevision": "main"
   }
 }
