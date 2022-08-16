@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "moduleResolution": "node16",
+    "module": "nodenext",
+    "noEmit": false,
+    "rootDir": "./src",
+    "outDir": "./dist/esm"
+  },
+  "exclude": [
+    "node_modules/**",
+    "tests/**"
+  ],
+  "include": [
+    "./src"
+  ]
+}

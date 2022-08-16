@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es2016",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "exclude": [
+    "node_modules/**"
+  ],
+  "include": [
+    "./src/*"
+  ],
+  "typedocOptions": {
+    "out": "docs",
+    "excludeExternals": true,
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "entryPoints": [
+      "./src/decoders.ts",
+      "./src/utils.ts"
+    ],
+    "theme": "default",
+  }
+}
