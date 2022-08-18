@@ -266,6 +266,31 @@ describe('D.optional(decoder)', () => {
   );
 });
 
+describe('D.nullable(decoder)', () => {
+  const cases: [string, D.Decoder<any>, any][] = [
+    ['string', D.string, 'input'],
+    ['number', D.number, 123],
+    ['literal', D.literal('v'), 'v'],
+  ];
+  test.each(cases)(
+    'transform decoder (%s) to allow undefined values',
+    (name, decoder, input) => {
+      const nullableDecoder = D.nullable(decoder);
+      expect(nullableDecoder(input)).toEqual(ok(input));
+      expect(nullableDecoder(null)).toEqual(ok(null));
+    }
+  );
+
+  test.each(cases)(
+    'transformed decoder (%s) does not allow undefined values',
+    (name, decoder, input) => {
+      const nullableDecoder = D.nullable(decoder);
+      expect(nullableDecoder(input)).toEqual(ok(input));
+      expect(nullableDecoder(undefined)).toHaveProperty('failure');
+    }
+  );
+});
+
 describe('D.union', () => {
   describe('with simple union of two objects', () => {
     const decoder = D.union([

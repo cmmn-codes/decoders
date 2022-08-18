@@ -91,6 +91,22 @@ export function optional<O, I = unknown>(
 }
 
 /**
+ * Creates a nullable decoder from a given decoder.
+ * Allows input values to be null.
+ * @param decoder
+ * @example ```ts
+ * // Creates a decoder that accepts values of type number or null.
+ * const decoder = D.nullable(D.string)
+ * ```
+ */
+export function nullable<O, I = unknown>(decoder: Decoder<O | null, I>) {
+  return (value: I) => {
+    if (value === null) return ok(null);
+    return decoder(value);
+  };
+}
+
+/**
  * Creates a union decoder from an array of decoders.
  * Union decoder checks if input value matches any of the provided decoders.
  * @param decoders

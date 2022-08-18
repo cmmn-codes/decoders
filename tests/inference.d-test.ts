@@ -122,7 +122,29 @@ run([
 ]);
 
 /**
- * Object decoder types
+ * Nullable decoder types
+ */
+
+const nullableNumberDecoder = D.nullable(D.number);
+const nullableStringDecoder = D.nullable(D.string);
+const nullableUnionDecoder = D.nullable(D.union([D.string, D.number]));
+
+type nullableNumberType = D.Infer<typeof nullableNumberDecoder>;
+type nullableStringType = D.Infer<typeof nullableStringDecoder>;
+type nullableUnionType = D.Infer<typeof nullableUnionDecoder>;
+
+run([
+  test<nullableNumberType, number | null, true>(),
+  test<nullableNumberType, null, false>(),
+  test<nullableNumberType, number, false>(),
+  test<nullableStringType, string | null, true>(),
+  test<nullableStringType, number, false>(),
+  test<nullableUnionType, number | string | null, true>(),
+  test<nullableUnionType, null, false>(),
+]);
+
+/**
+ * object decoder types
  */
 
 const emptyObjectDecoder = D.object({});
