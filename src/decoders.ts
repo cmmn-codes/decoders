@@ -44,10 +44,32 @@ type Optionalize<
   Keys extends keyof T = OptionalKeys<T>
 > = Omit<T, Keys> & Partial<Pick<T, Keys>>;
 
+type NativeObjects =
+  | Date
+  | URL
+  | Set<unknown>
+  | WeakSet<object>
+  | Map<unknown, unknown>
+  | WeakMap<object, unknown>
+  | Uint8Array
+  | Uint16Array
+  | Uint32Array
+  | BigUint64Array
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | BigInt64Array
+  | BigInteger
+  | Float32Array
+  | Float64Array
+  | Buffer;
+
 /**
  * Utility helper to flatten deeply nested type generics into a format which is prettier for your IDE.
  */
-type FlattenType<T> = T extends object
+type FlattenType<T> = T extends NativeObjects
+  ? T
+  : T extends object
   ? { [K in keyof T]: FlattenType<T[K]> }
   : T;
 
