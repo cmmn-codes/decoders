@@ -44,6 +44,7 @@ type Optionalize<
   Keys extends keyof T = OptionalKeys<T>
 > = Omit<T, Keys> & Partial<Pick<T, Keys>>;
 
+type StandardTypes = number | string | boolean | symbol;
 type NativeObjects =
   | Date
   | URL
@@ -67,7 +68,7 @@ type NativeObjects =
 /**
  * Utility helper to flatten deeply nested type generics into a format which is prettier for your IDE.
  */
-type FlattenType<T> = T extends NativeObjects
+type FlattenType<T> = T extends NativeObjects | StandardTypes
   ? T
   : T extends object
   ? { [K in keyof T]: FlattenType<T[K]> }
@@ -383,4 +384,47 @@ export function string(v: unknown): DecoderResult<string> {
 export function boolean(v: unknown): DecoderResult<boolean> {
   if (v === false || v === true) return ok(v);
   return failure('Not a boolean');
+}
+
+/**
+ * A helper to pipe together a series of Decoders.
+ * Flowing left to right the result of each decoder is passed into the next as its argument.
+ * Bails out early on the first failed decoder.
+ */
+export function compose<A, B, C, D, E, F>(
+  a: Decoder<A>,
+  b: Decoder<B, A>,
+  c: Decoder<C, B>,
+  d: Decoder<D, C>,
+  e: Decoder<E, D>,
+  f: Decoder<F, E>
+): Decoder<F>;
+export function compose<A, B, C, D, E>(
+  a: Decoder<A>,
+  b: Decoder<B, A>,
+  c: Decoder<C, B>,
+  d: Decoder<D, C>,
+  e: Decoder<E, D>
+): Decoder<E>;
+export function compose<A, B, C, D>(
+  a: Decoder<A>,
+  b: Decoder<B, A>,
+  c: Decoder<C, B>,
+  d: Decoder<D, C>
+): Decoder<D>;
+export function compose<A, B, C>(
+  a: Decoder<A>,
+  b: Decoder<B, A>,
+  c: Decoder<C, B>
+): Decoder<C>;
+export function compose<A, B>(a: Decoder<A>, b: Decoder<B, A>): Decoder<B>;
+export function compose(...decoders: Decoder<unknown>[]): Decoder<unknown> {
+  return (input) => {
+    let output: DecoderResult<unknown> = ok(input);
+    for (let i = 0; i < decoders.length; i++) {
+      output = pipe(output, chain(decoders[i]));
+      if (isFailure(output)) return output;
+    }
+    return output;
+  };
 }

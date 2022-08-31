@@ -1,5 +1,6 @@
 import * as D from '../src/decoders.js';
 import { failure, ok } from '../src/result.js';
+import { Decoder } from '../src/decoders.js';
 
 describe('D.string', () => {
   const okCases = ['hello', ''];
@@ -434,6 +435,74 @@ describe('D.intersection', () => {
       ['number', 123],
       ['undefined', undefined],
     ];
+    test.each(failureCases)('return decoder error (%s)', (name, input) => {
+      expect(decoder(input)).toHaveProperty('failure');
+    });
+  });
+});
+
+describe('D.compose', () => {
+  const dateDecoder: Decoder<Date, string> = (i) => {
+    const date = new Date(i);
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      return ok(date);
+    }
+    return failure('Not a date like object');
+  };
+  const hoursDecoder: Decoder<number, Date> = (i) => {
+    return ok(i.getHours());
+  };
+  const evenNumberDecoder: Decoder<number, number> = (i) => {
+    if (i % 2 === 0) return ok(i);
+    return failure('Uneven number');
+  };
+
+  it('does not call following decoders after first failure', () => {
+    const dateDecoderSpy = jest.fn().mockImplementation(dateDecoder);
+    const hoursDecoderSpy = jest.fn().mockImplementation(hoursDecoder);
+    const decoder = D.compose(
+      D.string,
+      dateDecoderSpy,
+      hoursDecoderSpy,
+    );
+    const result = decoder('hello');
+    expect(result).toHaveProperty('failure');
+    expect(dateDecoderSpy).toHaveBeenCalledTimes(1);
+    expect(dateDecoderSpy).toHaveBeenCalledWith('hello');
+    expect(hoursDecoderSpy).toHaveBeenCalledTimes(0);
+  });
+
+  describe('multiple composed decoders (a date with even hour)', () => {
+    const decoder = D.compose(
+      D.string,
+      dateDecoder,
+      hoursDecoder,
+      evenNumberDecoder
+    );
+
+    const okCases: [string, unknown, number][] = [
+      ['10am on 01-03-2000', new Date(2000, 2, 1, 10).toISOString(), 10],
+      ['10pm on 11-12-2023', new Date(2023, 11, 11, 22).toISOString(), 22],
+    ];
+
+    test.each(okCases)(
+      'successfully decodes a date with even hour (%s)',
+      (name, input, expected) => {
+        const result = decoder(input);
+        expect(result).toEqual(ok(expected));
+      }
+    );
+
+    const unevenDateString = new Date(2000, 2, 1, 11).toISOString();
+    const failureCases: [string, unknown][] = [
+      ['object', { type: 'cat', bark: 'beep' }],
+      ['null', null],
+      ['non-date-like-string', 'string'],
+      ['uneven-date-like-string', unevenDateString],
+      ['number', 1232345],
+      ['undefined', undefined],
+    ];
+
     test.each(failureCases)('return decoder error (%s)', (name, input) => {
       expect(decoder(input)).toHaveProperty('failure');
     });

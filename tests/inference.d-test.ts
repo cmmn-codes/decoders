@@ -1,4 +1,5 @@
 import * as D from '../src/decoders.js';
+import { Decoder, DecoderResult } from '../src/decoders.js';
 
 /**
  * Utility type to compare two types - will resolve to `true` if equal, otherwise `false`.
@@ -266,3 +267,42 @@ run([
   >(),
   test<impossibleIntersectionType, never, true>(),
 ]);
+
+/**
+ * Composing decoder types
+ */
+
+declare function dateDecoder(input: string): DecoderResult<Date>;
+
+declare function timeDecoder(input: Date): DecoderResult<number>;
+
+type EvenNumber = number & { _type: 'even-number' };
+
+declare function EvenNumberDecoder(input: number): DecoderResult<EvenNumber>;
+
+const TwoChainedDecoder = D.compose(D.string, dateDecoder);
+const ThreeChainedDecoder = D.compose(D.string, dateDecoder, timeDecoder);
+const FourChainedDecoder = D.compose(
+  D.string,
+  dateDecoder,
+  timeDecoder,
+  EvenNumberDecoder
+);
+
+type TwoChainedDecoderType = D.Infer<typeof TwoChainedDecoder>;
+type ThreeChainedDecoderType = D.Infer<typeof ThreeChainedDecoder>;
+type FourChainedDecoderType = D.Infer<typeof FourChainedDecoder>;
+
+run([
+  test<TwoChainedDecoderType, Date, true>(),
+  test<TwoChainedDecoderType, number, false>(),
+  test<ThreeChainedDecoderType, number, true>(),
+  test<ThreeChainedDecoderType, string, false>(),
+  test<FourChainedDecoderType, EvenNumber, true>(),
+  test<FourChainedDecoderType, number, false>(),
+]);
+
+//@ts-expect-error Output of decoder does not match the expected input of the next.
+D.compose(D.number, dateDecoder, timeDecoder);
+//@ts-expect-error Expect more than one argument
+D.compose(D.string);
